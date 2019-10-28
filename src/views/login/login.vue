@@ -2,7 +2,7 @@
   <div>
     <div class="jpg"></div>
     <el-card class="box-card">
-      <img src="../../assets/logo_index.png" alt />
+      <img class="login-img" src="../../assets/logo_index.png" alt />
       <!-- 表单 -->
       <el-form ref="form" status-icon :model="form" :rules="LoginRules">
         <el-form-item prop="mobile">
@@ -20,6 +20,7 @@
 </template>
 
 <script>
+import local from '@/utils/local'
 export default {
   data () {
     // 自定义验证(手机号)
@@ -35,8 +36,8 @@ export default {
     return {
       form: {
         // name: '',
-        mobile: '',
-        code: ''
+        mobile: '13333333333',
+        code: '246810'
       },
       LoginRules: {
         mobile: [
@@ -51,6 +52,7 @@ export default {
     }
   },
   methods: {
+    // 登录
     submitForm (formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
@@ -58,6 +60,7 @@ export default {
           this.$http
             .post('authorizations', this.form)
             .then(res => {
+              local.setUser(res.data.data)
               this.$router.push('/')
             })
             .catch(err => {
@@ -102,7 +105,7 @@ export default {
   transform: translate(-50%, -50%);
   z-index: 1;
 }
-img {
+.login-img {
   display: block;
   width: 200px;
   height: 50px;
