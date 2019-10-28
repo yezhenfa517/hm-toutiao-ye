@@ -3,16 +3,17 @@
     <div class="jpg"></div>
     <el-card class="box-card">
       <img src="../../assets/logo_index.png" alt />
-      <el-form ref="form">
-        <el-form-item>
-          <el-input v-model="form.name"></el-input>
+      <!-- 表单 -->
+      <el-form ref="form" status-icon :model="form" :rules="LoginRules">
+        <el-form-item prop="mobile">
+          <el-input v-model="form.mobile" placeholder="请输入手机号"></el-input>
         </el-form-item>
-        <el-form-item>
-          <el-input v-model="form.region" class="left"></el-input>
+        <el-form-item prop="code">
+          <el-input v-model="form.code" class="left" placeholder="请输入验证码"></el-input>
           <el-button>立即获取</el-button>
         </el-form-item>
-        <el-checkbox label="我已阅读并同意用户协议和隐私条款" name="type"></el-checkbox>
-        <el-button class="primary" type="primary" @click="onSubmit">立即获取</el-button>
+        <el-checkbox :value="true" label="我已阅读并同意用户协议和隐私条款" name="type"></el-checkbox>
+        <el-button class="primary" type="primary" @click="submitForm('form')">立即登录</el-button>
       </el-form>
     </el-card>
   </div>
@@ -21,22 +22,49 @@
 <script>
 export default {
   data () {
+    // 自定义验证(手机号)
+    const mobile = (rule, value, callback) => {
+      // 通过校验逻辑判断成功失败
+      // 手机号格式：1开头 第二位3-9 9个数字结尾
+      if (/^1[3-9]\d{9}$/.test(value)) {
+        callback()
+      } else {
+        callback(new Error('手机号格式不对'))
+      }
+    }
     return {
       form: {
-        name: '请输入手机号',
-        region: '请输入验证',
-        date1: '',
-        date2: '',
-        delivery: false,
-        type: [],
-        resource: '',
-        desc: ''
+        // name: '',
+        mobile: '',
+        code: ''
+      },
+      LoginRules: {
+        mobile: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { validator: mobile, trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '请输入验证码', trigger: 'blur' },
+          { len: 6, message: '验证码格式有误', trigger: 'blur' }
+        ]
       }
     }
   },
   methods: {
-    onSubmit () {
-      console.log('submit!')
+    submitForm (formName) {
+      this.$refs[formName].validate(valid => {
+        if (valid) {
+          // console.log('登录成功')
+          this.$http
+            .post('authorizations', this.form)
+            .then(res => {
+              this.$router.push('/')
+            })
+            .catch(err => {
+              console.log(err)
+            })
+        }
+      })
     }
   }
 }
