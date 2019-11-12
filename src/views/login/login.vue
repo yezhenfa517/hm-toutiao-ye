@@ -35,8 +35,7 @@ export default {
     }
     return {
       form: {
-        // name: '',
-        mobile: '13333333333',
+        mobile: '15232025517',
         code: '246810'
       },
       LoginRules: {
@@ -54,18 +53,27 @@ export default {
   methods: {
     // 登录
     submitForm (formName) {
-      this.$refs[formName].validate(valid => {
+      this.$refs[formName].validate(async valid => {
         if (valid) {
           // console.log('登录成功')
-          this.$http
-            .post('authorizations', this.form)
-            .then(res => {
-              local.setUser(res.data.data)
-              this.$router.push('/')
-            })
-            .catch(err => {
-              console.log(err)
-            })
+          // this.$http
+          //   .post('authorizations', this.form)
+          //   .then(res => {
+          //     local.setUser(res.data.data)
+          //     this.$router.push('/')
+          //   })
+          //   .catch(err => {
+          //     console.log(err)
+          //   })
+
+          // 判断代码有没有出错 如果try中的代码出现了错误就会执行catch中的代码
+          try {
+            const { data: { data } } = await this.$http.post('authorizations', this.form)
+            local.setUser(data)
+            this.$router.push('/')
+          } catch (e) {
+            this.$message.error('手机号或验证码错误')
+          }
         }
       })
     }

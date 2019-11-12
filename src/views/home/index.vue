@@ -2,7 +2,7 @@
   <el-container class="container">
     <el-aside :width="isOpen?'200px':'62px'">
       <el-menu
-        default-active="/"
+        :default-active="$route.path"
         class="el-menu-vertical-demo"
         background-color="#002033"
         text-color="#fff"
@@ -25,19 +25,19 @@
           <i class="el-icon-picture"></i>
           <span slot="title">素材管理</span>
         </el-menu-item>
-        <el-menu-item index="publish">
+        <el-menu-item index="/publish">
           <i class="el-icon-s-promotion"></i>
           <span slot="title">发布文章</span>
         </el-menu-item>
-        <el-menu-item index="comment">
+        <el-menu-item index="/comment">
           <i class="el-icon-chat-dot-round"></i>
           <span slot="title">评论管理</span>
         </el-menu-item>
-        <el-menu-item index="fans">
+        <el-menu-item index="/fans">
           <i class="el-icon-present"></i>
           <span slot="title">粉丝管理</span>
         </el-menu-item>
-        <el-menu-item index="setting">
+        <el-menu-item index="/setting">
           <i class="el-icon-setting"></i>
           <span slot="title">个人设置</span>
         </el-menu-item>
@@ -50,19 +50,30 @@
         <!-- 文字 -->
         <span class="text">江苏传智播客有限公司</span>
         <!-- 下拉菜单 -->
-        <el-dropdown>
+        <!-- 组件提供的方法  @command  -->
+        <el-dropdown @command="handleClick">
           <div class="dropdown">
-            <img src="../../assets/avatar.jpg" alt />
+            <!-- 获取用户头像 -->
+            <img :src="userInfo.photo" alt />
             <span class="el-dropdown-link">
-              用户名
+              <!-- 用户名 -->
+              {{userInfo.name}}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
           </div>
           <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item>
+            <!-- <el-dropdown-item @click.native="setting">
+              <i class="el-icon-setting" ></i>个人设置
+            </el-dropdown-item>
+            <el-dropdown-item @click.native="logout">
+              <i class="el-icon-unlock"></i>退出登录
+            </el-dropdown-item>-->
+
+            <!-- 组件提供的方法 -->
+            <el-dropdown-item command="setting">
               <i class="el-icon-setting"></i>个人设置
             </el-dropdown-item>
-            <el-dropdown-item>
+            <el-dropdown-item command="logout">
               <i class="el-icon-unlock"></i>退出登录
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -76,16 +87,48 @@
 </template>
 
 <script>
+import local from '@/utils/local'
+import eventBus from '@/eventBus'
 export default {
   data () {
     return {
-      isOpen: true
+      isOpen: true,
+      // 对象
+      userInfo: {
+        name: '',
+        photo: null
+      }
     }
+  },
+  created () {
+    // 获取用户信息
+    const user = local.getUser() || {}
+    // 传入对象
+    this.userInfo.name = user.name
+    this.userInfo.photo = user.photo
+    eventBus.$on('updateName', name => {
+      this.userInfo.name = name
+    })
+    eventBus.$on('updataphoto', photo => {
+      this.userInfo.photo = photo
+    })
   },
   methods: {
     toggleMenu () {
       // 切换左菜单 展开与收起
       this.isOpen = !this.isOpen
+    },
+    // 个人设置
+    setting () {
+      this.$router.push('/setting')
+    },
+    // 退出登录
+    logout () {
+      local.delUser()
+      this.$router.push('/login')
+    },
+    handleClick (command) {
+      this[command]()
     }
   }
 }
@@ -148,7 +191,7 @@ export default {
     }
   }
   //   视图内容
-  .el-main {
-  }
+  // .el-main {
+  // }
 }
 </style>

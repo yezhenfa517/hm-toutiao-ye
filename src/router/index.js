@@ -1,11 +1,17 @@
-import VueRouter from 'vue-router'
-import Vue from 'vue'
-import local from '@/utils/local'
-import login from '../views/login/login.vue'
-import Home from '@/views/home'
-import Welcome from '@/views/welcome'
 // 跳转错误页面
-import NotFound from '@/views/404'
+const NotFound = () => import('@/views/404')
+const VueRouter = () => import('vue-router')
+const Vue = () => import('vue')
+const local = () => import('@/utils/local')
+const login = () => import('../views/login/login.vue')
+const Home = () => import('@/views/home')
+const Welcome = () => import('@/views/welcome')
+const Article = () => import('@/views/article/article')
+const Image = () => import('@/views/image')
+const Publish = () => import('@/views/publish/')
+const Comment = () => import('@/views/comment/')
+const Setting = () => import('@/views/setting')
+const Fans = () => import('@/views/fans')
 // import local from '@/utils/local'
 Vue.use(VueRouter)
 const router = new VueRouter({
@@ -18,6 +24,30 @@ const router = new VueRouter({
         {
           path: '/',
           component: Welcome
+        },
+        {
+          path: '/article',
+          component: Article
+        },
+        {
+          path: '/image',
+          component: Image
+        },
+        {
+          path: '/publish',
+          component: Publish
+        },
+        {
+          path: '/comment',
+          component: Comment
+        },
+        {
+          path: '/setting',
+          component: Setting
+        },
+        {
+          path: '/fans',
+          component: Fans
         },
         {
           path: '*',
